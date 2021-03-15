@@ -1,25 +1,31 @@
-import logo from './logo.svg';
-import './App.css';
+import React, { useMemo, useState } from "react";
+import { BrowserRouter as Router, Route } from "react-router-dom";
+import Footer from "./components/footer/Footer";
+import Header from "./components/header/Header";
+import Index from "./components/index/Index";
+import Login from "./components/login/Login";
+import Register from "./components/register/Register";
+import { UserContext } from "./contexts/UserContext";
+import { PrivateRoute } from "./routes/PrivateRoute";
 
-function App() {
+export default function App() {
+  const [user, setUser] = useState(null);
+  const providerValue = useMemo(() => ({ user, setUser }), [user, setUser]);
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <>
+      <Router>
+        <UserContext.Provider value={providerValue}>
+          <Header />
+          <div className="wrapper">
+            {/*<PrivateRoute path="/" exact component={Index} />*/}
+            <Route path="/" exact component={Index} />
+            <Route path="/register" exact component={Register} />
+            <Route path="/login" exact component={Login} />
+          </div>
+          <Footer />
+        </UserContext.Provider>
+      </Router>
+    </>
   );
 }
-
-export default App;
