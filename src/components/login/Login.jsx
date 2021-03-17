@@ -7,6 +7,8 @@ import { useHistory } from "react-router-dom";
 import { setTokenLocal, setTokenSession } from "../../services/storageService";
 import "./Login.css";
 import { UserContext } from "../../contexts/UserContext";
+import { login } from "../../services/authService";
+import jwtDecode from "jwt-decode";
 
 let schema = yup.object().shape({
   username: yup.string().min(5, "validation_username_minLength5"),
@@ -20,29 +22,21 @@ function Login() {
   const { register, handleSubmit, errors } = useForm({
     resolver: yupResolver(schema),
   });
-  const [serverError, setServerError] = useState(null);
-  const setUser = useContext(UserContext)[1];
+  const [, setServerError] = useState(null);
+  const { setUser } = useContext(UserContext);
 
   const doSubmit = async (obj) => {
     setServerError(null);
-    let remember = obj.remember;
     try {
-      //const data = await sendLoginInfo(username, password);
-      const data = { token: "123" };
-
-      if (remember) setTokenLocal(data.token);
-      else setTokenSession(data.token);
-
-      //let user = jwtDecode(data.token);
-      let user = {
-        id: 1,
-        name: "Test Test",
-        email: "test@test.com",
-        password: "test",
-      };
-
+      const response = await login(obj.username, obj.password);
+      if (obj.remember) setTokenLocal(response.data);
+      else setTokenSession(response.data);
+      let tokenDecoded = jwtDecode(response.data);
+      let user = tokenDecoded.user;
       setUser(user);
+      history.push("/");
     } catch (err) {
+      console.error(err);
       setServerError({ message: err.error });
     }
   };
@@ -82,6 +76,7 @@ function Login() {
         <div className="custom-control custom-checkbox">
           <input
             type="checkbox"
+            id="remember"
             name="remember"
             className="custom-control-input"
             ref={register}
@@ -102,7 +97,9 @@ function Login() {
         {t("label_button_registration")}
       </button>
       <p className="forgot-password text-right">
-        <a href="#">{t("label_link_forgotPassword")}</a>
+        <a href="https://sportzone21.herokuapp.com/">
+          {t("label_link_forgotPassword")}
+        </a>
       </p>
     </form>
   );
