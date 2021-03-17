@@ -4,11 +4,12 @@ import { useTranslation } from "react-i18next";
 import { useHistory } from "react-router";
 import { resources } from "../../18n";
 import { UserContext } from "../../contexts/UserContext";
+import { logout } from "../../services/authService";
 import "./Header.css";
 
 export default function Header() {
   let history = useHistory();
-  let user = useContext(UserContext);
+  let { user, setUser } = useContext(UserContext);
   const { t, i18n } = useTranslation();
   const selectedLanguage = i18n.language;
 
@@ -40,11 +41,16 @@ export default function Header() {
               ))}
             </NavDropdown>
             {user ? (
-              <Nav.Link onClick={() => history.push("/login")}>
-                {t("label_header_login")}
-              </Nav.Link>
+              <Nav>
+                <Nav.Link href="#">{user.username}</Nav.Link>
+                <Nav.Link onClick={() => logout(setUser)}>
+                  {t("label_button_logout")}
+                </Nav.Link>
+              </Nav>
             ) : (
-              <Nav.Link href="#">{user.name}</Nav.Link>
+              <Nav.Link onClick={() => history.push("/login")}>
+                {t("label_button_login")}
+              </Nav.Link>
             )}
           </Nav>
         </Navbar.Collapse>

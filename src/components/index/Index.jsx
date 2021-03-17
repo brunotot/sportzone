@@ -3,7 +3,7 @@ import { UserContext } from "../../contexts/UserContext";
 import { useTranslation } from "react-i18next";
 
 export default function Index() {
-  const { user, setUser } = useContext(UserContext);
+  const { user } = useContext(UserContext);
   const { t } = useTranslation();
 
   return (

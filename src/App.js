@@ -6,10 +6,12 @@ import Index from "./components/index/Index";
 import Login from "./components/login/Login";
 import Register from "./components/register/Register";
 import { UserContext } from "./contexts/UserContext";
-import { PrivateRoute } from "./routes/PrivateRoute";
+import { AuthDisabledRoute } from "./routes/AuthDisabledRoute";
+import { getUser } from "./services/authService";
 
 export default function App() {
-  const [user, setUser] = useState(null);
+  let currentUser = getUser();
+  const [user, setUser] = useState(currentUser);
   const providerValue = useMemo(() => ({ user, setUser }), [user, setUser]);
 
   return (
@@ -20,8 +22,8 @@ export default function App() {
           <div className="wrapper">
             {/*<PrivateRoute path="/" exact component={Index} />*/}
             <Route path="/" exact component={Index} />
-            <Route path="/register" exact component={Register} />
-            <Route path="/login" exact component={Login} />
+            <AuthDisabledRoute path="/register" exact component={Register} />
+            <AuthDisabledRoute path="/login" exact component={Login} />
           </div>
           <Footer />
         </UserContext.Provider>
