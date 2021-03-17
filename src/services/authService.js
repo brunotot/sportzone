@@ -9,8 +9,10 @@ const api = axios.create({
 const getUser = () => {
   const token = getToken();
   if (token) {
-    const tokenDecoded = jwtDecode(token);
-    return tokenDecoded.user;
+    try {
+      const { user } = jwtDecode(token);
+      return user;
+    } catch (e) {}
   }
   return null;
 };
